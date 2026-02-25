@@ -23,14 +23,25 @@ export default function PassageDisplay({
     const cursor = cursorRef.current;
     if (!container || !cursor) return;
 
-    // Scroll the container (not the page) so cursor stays visible
-    const containerTop = container.getBoundingClientRect().top;
-    const cursorTop = cursor.getBoundingClientRect().top;
-    const offset = cursorTop - containerTop;
+    // 1. Scroll the INTERNAL container so cursor stays visible within the box
+    const containerRect = container.getBoundingClientRect();
+    const cursorRect = cursor.getBoundingClientRect();
+    const offset = cursorRect.top - containerRect.top;
 
-    // Only scroll if cursor is outside the visible area of the container
     if (offset > container.clientHeight - 40 || offset < 0) {
       container.scrollTop += offset - container.clientHeight / 2;
+    }
+
+    // 2. Scroll the WINDOW so the container/cursor stays above the mobile keyboard
+    // window.visualViewport.height gets the true screen height excluding the keyboard
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    
+    // Check if the cursor is hidden behind the keyboard (within 40px of the bottom)
+    if (cursorRect.bottom > viewportHeight - 40) {
+      window.scrollBy({
+        top: cursorRect.bottom - viewportHeight + 100, // 100px of breathing room
+        behavior: "smooth",
+      });
     }
   }, [typedText]);
 
@@ -54,7 +65,9 @@ export default function PassageDisplay({
             <span
               key={index}
               ref={isCursor ? cursorRef : null}
-              className={`${colorClass} ${isCursor ? "border-b-2 border-blue-400" : ""}`}
+              className={`${colorClass} ${
+                isCursor ? "border-b-2 border-blue-400" : ""
+              }`}
             >
               {char}
             </span>
@@ -67,7 +80,7 @@ export default function PassageDisplay({
         <div className="flex justify-center">
           <Button
             className="bg-neutral-800 hover:bg-neutral-800/90 font-extrabold"
-            onClick={()=> onReset()}
+            onClick={() => onReset()}
           >
             Restart Test
             <RefreshCcwIcon className="ml-2 size-4" />
