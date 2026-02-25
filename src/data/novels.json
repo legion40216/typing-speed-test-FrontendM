@@ -1,0 +1,64 @@
+{
+  "novels": [
+    {
+      "id": "novel-1",
+      "title": "The Lion and The Mouse",
+      "author": "Aesop",
+      "text": "A mighty lion lay sleeping in the forest when a small mouse ran across his paw and woke him. The lion raised his great claws, ready to crush the tiny creature. The mouse begged for mercy, promising that one day he might return the favor. The lion laughed at the idea but let him go. Not long after, the lion was trapped in a hunter's net. It was the little mouse who gnawed through the ropes and set him free. No act of kindness, however small, is ever wasted."
+    },
+    {
+      "id": "novel-2",
+      "title": "A Tale of Two Cities",
+      "author": "Charles Dickens",
+      "text": "It was a time of great contrasts — an era of hope shadowed by the constant threat of violence. In London and Paris, the lives of ordinary people hung in the balance as revolution tore through the old order. Against this turbulent backdrop, a story of love, sacrifice, and redemption unfolded. A man of wasted talent chose to give his life so that another could live. His final act of selflessness transformed him into something greater than he had ever been during the years of his ruin."
+    },
+    {
+      "id": "novel-3",
+      "title": "Rapunzel",
+      "author": "The Brothers Grimm",
+      "text": "Deep in the forest, a girl with hair of extraordinary length was locked away in a tower with no door and no staircase. Each day, a sorceress climbed up by calling out to her and using the long golden braid as a rope. A prince, wandering through the woods, heard the girl singing and discovered the tower's secret. Their meetings were hidden for a time, but the sorceress discovered the truth and cast the girl away into a barren wasteland. Yet love, in the end, proved stronger than any curse."
+    },
+    {
+      "id": "novel-4",
+      "title": "The War of the Worlds",
+      "author": "H.G. Wells",
+      "text": "No one would have believed, in the last years of the nineteenth century, that human affairs were being watched from the darkness of space. Yet across the gulf of the cosmos, vast intellects regarded our world with envious eyes and drew their plans against us. When the cylinders fell upon the Surrey hills and the towering machines rose up on their tripod legs, humanity — with all its armies and artillery — was revealed to be utterly powerless. Our salvation came not from strength or ingenuity, but from the smallest organisms on Earth."
+    },
+    {
+      "id": "novel-5",
+      "title": "Dracula",
+      "author": "Bram Stoker",
+      "text": "Jonathan Harker traveled east to Transylvania on a routine business matter, unaware that his client was no ordinary nobleman. Castle Dracula sat perched above mist-filled valleys, beautiful and terrible. As the weeks passed, Harker realized he was not a guest but a prisoner. Far away in England, strange events began to unfold — a ship ran aground in a storm with its crew vanished and a black dog bounding ashore. What followed was a desperate hunt across Europe, a race between the forces of the living and the will of the undead."
+    },
+    {
+      "id": "novel-6",
+      "title": "The Adventures of Sherlock Holmes",
+      "author": "Sir Arthur Conan Doyle",
+      "text": "In the rooms at Baker Street, the world's only consulting detective received the most peculiar visitors. Where others saw only chaos, he perceived pattern; where others felt bafflement, he found clarity. A mud-stained cuff, a particular variety of tobacco ash, the callus on a man's thumb — each detail spoke volumes to the trained eye. Dr. Watson faithfully recorded these investigations: the woman in distress, the whispered threat, the villain who underestimated the lean figure in the dressing gown, and always paid dearly for the mistake."
+    },
+    {
+      "id": "novel-7",
+      "title": "The Wonderful Wizard of Oz",
+      "author": "L. Frank Baum",
+      "text": "A cyclone swept a young Kansas girl and her little dog far from home, dropping them into a strange and colorful land where the grass was emerald and the roads were paved in gold. To find her way back, Dorothy was told to seek the great Wizard in his glittering city. Along the yellow brick road she gathered companions — a scarecrow who wanted a brain, a tin woodman longing for a heart, and a lion in desperate need of courage. Together they faced witches and wonders, only to discover that what they sought had been within them all along."
+    },
+    {
+      "id": "novel-8",
+      "title": "The Call of the Wild",
+      "author": "Jack London",
+      "text": "Buck was a large and comfortable dog living a pampered life on a California estate when the world changed without warning. Stolen and shipped north, he arrived in the brutal cold of the Klondike during the great Gold Rush. Every day was a test of survival — pulling heavy sleds across frozen rivers, learning the ancient law of club and fang. Something old stirred in him with each passing winter: a pull toward the wilderness, toward the howling darkness of the forest at night. The call was patient, and in the end, it could not be refused."
+    },
+    {
+      "id": "novel-9",
+      "title": "Moby Dick",
+      "author": "Herman Melville",
+      "text": "Call me Ishmael. So begins one of the great obsessions in all of literature. Captain Ahab, scarred from jaw to heel by a creature of almost mythic power, drove the Pequod and her crew across the full width of the world's oceans in search of the white whale. His monomaniacal fury consumed everything around him — the safety of his men, the logic of commerce, the ordinary measures of risk and reward. The whale was no mere animal to Ahab; it was the mask behind which all evil lurked. He would strike through that mask or die in the attempt."
+    },
+    {
+      "id": "novel-10",
+      "title": "A Christmas Carol",
+      "author": "Charles Dickens",
+      "text": "Ebenezer Scrooge was as cold as the counting house he kept. He turned away charity, dismissed his clerk's modest comfort, and refused his nephew's warmhearted invitation to Christmas dinner. But on Christmas Eve, the chains of the past began to rattle. Three spirits visited him before dawn — one bearing memories, one showing the joy and suffering of the present, and one revealing a future of chilling silence and unclaimed death. When morning came and the church bells rang out over the snow, Scrooge awoke a changed man, ready at last to live with generosity and laughter."
+    }
+  ]
+}
