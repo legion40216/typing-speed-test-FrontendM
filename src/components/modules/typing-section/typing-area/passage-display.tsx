@@ -31,7 +31,8 @@ export default function PassageDisplay({
     <div>
       <div
         ref={containerRef}
-        className="relative text-2xl leading-relaxed py-6 cursor-text focus:outline-none overflow-y-auto h-64"
+        className="relative text-2xl leading-relaxed cursor-text 
+          focus:outline-none overflow-y-auto h-64"
         tabIndex={0}
       >
         {passage.split("").map((char, index) => {
