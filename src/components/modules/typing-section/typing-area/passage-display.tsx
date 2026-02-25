@@ -19,35 +19,16 @@ export default function PassageDisplay({
   const cursorRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    const cursor = cursorRef.current;
-    if (!container || !cursor) return;
-
-    // 1. Scroll the INTERNAL container so cursor stays visible within the box
-    const containerRect = container.getBoundingClientRect();
-    const cursorRect = cursor.getBoundingClientRect();
-    const offset = cursorRect.top - containerRect.top;
-
-    if (offset > container.clientHeight - 40 || offset < 0) {
-      container.scrollTop += offset - container.clientHeight / 2;
-    }
-
-    // 2. Scroll the WINDOW so the container/cursor stays above the mobile keyboard
-    // window.visualViewport.height gets the true screen height excluding the keyboard
-    const viewportHeight = window.visualViewport?.height || window.innerHeight;
-    
-    // Check if the cursor is hidden behind the keyboard (within 40px of the bottom)
-    if (cursorRect.bottom > viewportHeight - 40) {
-      window.scrollBy({
-        top: cursorRect.bottom - viewportHeight + 100, // 100px of breathing room
-        behavior: "smooth",
+    if (cursorRef.current) {
+      cursorRef.current.scrollIntoView({
+        behavior: "instant", // 'instant' often feels better on mobile to keep up with fast typing
+        block: "center",
       });
     }
   }, [typedText]);
 
   return (
     <div>
-      {/* Fixed height container — scrolls internally, page stays still */}
       <div
         ref={containerRef}
         className="relative text-2xl leading-relaxed py-6 cursor-text focus:outline-none overflow-y-auto h-64"

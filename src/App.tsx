@@ -310,19 +310,26 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-neutral-900">
-      <input
-        ref={inputRef}
-        onKeyDown={handleKeyDown}
-        onChange={handleInput}
-        className="absolute opacity-0 w-0 h-0 pointer-events-none"
-        aria-hidden="true"
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        readOnly={gameState === "finished"}
-      />
+<div className="min-h-screen bg-neutral-900 relative"> {/* Add 'relative' here */}
+  <input
+    ref={inputRef}
+    onKeyDown={handleKeyDown}
+    onChange={handleInput}
+    // CHANGED: Positioned it where the action is
+    className="absolute opacity-0 pointer-events-none -z-10"
+    style={{
+      top: '50%', // Keeps it roughly in the middle of the viewport
+      left: '50%',
+      width: '1px',
+      height: '1px'
+    }}
+    aria-hidden="true"
+    autoComplete="off"
+    autoCorrect="off"
+    autoCapitalize="off"
+    spellCheck={false}
+    readOnly={gameState === "finished"}
+  />
 
       <div className="container mx-auto px-6">
         <header className="py-6">
