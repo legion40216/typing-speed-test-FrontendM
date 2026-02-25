@@ -67,7 +67,7 @@ export default function PassageDisplay({
         <div className="flex justify-center">
           <Button
             className="bg-neutral-800 hover:bg-neutral-800/90 font-extrabold"
-            onClick={onReset}
+            onClick={()=> onReset()}
           >
             Restart Test
             <RefreshCcwIcon className="ml-2 size-4" />

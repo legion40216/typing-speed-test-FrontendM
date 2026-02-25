@@ -77,7 +77,8 @@ export default function App() {
 
   // ── Reset everything ──────────────────────────────────────────────────────
   const reset = useCallback(
-    (newDifficulty: DifficultyOption = difficulty) => {
+    (newDifficulty: DifficultyOption = difficulty, shouldFocus = true) => {
+      // 👈 add param
       timerRef.current && clearInterval(timerRef.current);
       timerRef.current = null;
       startTimeRef.current = null;
@@ -95,7 +96,10 @@ export default function App() {
       setPassage((currentPassage) =>
         isNovelMode ? currentPassage : getRandomPassage(newDifficulty),
       );
-      setTimeout(() => inputRef.current?.focus(), 0);
+      if (shouldFocus) {
+        // 👈 guard focus
+        setTimeout(() => inputRef.current?.focus(), 0);
+      }
     },
     [difficulty, isNovelMode],
   );
@@ -167,7 +171,9 @@ export default function App() {
       setTypedText(next);
 
       if (next === passage) {
-        const correct = next.split("").filter((c, i) => c === passage[i]).length;
+        const correct = next
+          .split("")
+          .filter((c, i) => c === passage[i]).length;
         finish(newWpm, correct, next.length - correct);
       }
     },
@@ -216,7 +222,7 @@ export default function App() {
 
   // ── Mobile: character input via IME / virtual keyboard ───────────────────
   const handleInput = useCallback(
-    (e: React.FormEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       if (gameState === "finished") return;
       // Physical keyboard already handled this keystroke via window listener
       if (lastKeyWasPhysical.current) {
@@ -289,7 +295,7 @@ export default function App() {
       } else {
         setPassage(getRandomPassage(difficulty));
       }
-      reset();
+      reset(difficulty, false); // 👈 skip focus
       return next;
     });
   }, [difficulty, reset]);
@@ -298,9 +304,9 @@ export default function App() {
     (novel: NovelEntry) => {
       setSelectedNovel(novel);
       setPassage(novel.text.trim());
-      reset();
+      reset(difficulty, false); // 👈 skip focus
     },
-    [reset],
+    [reset, difficulty],
   );
 
   return (
@@ -308,7 +314,7 @@ export default function App() {
       <input
         ref={inputRef}
         onKeyDown={handleKeyDown}
-        onInput={handleInput}
+        onChange={handleInput}
         className="absolute opacity-0 w-0 h-0 pointer-events-none"
         aria-hidden="true"
         autoComplete="off"
