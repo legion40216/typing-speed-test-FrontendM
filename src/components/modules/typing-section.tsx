@@ -1,5 +1,4 @@
 // components/modules/typing-section.tsx
-import React from "react";
 import type {
   DifficultyOption,
   GameState,

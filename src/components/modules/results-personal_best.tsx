@@ -1,4 +1,3 @@
-import React from "react";
 import iconCelebrate from "../../assets/icon-new-pb.svg";
 import { RefreshCcwIcon } from "lucide-react";
 import { Button } from "../ui/button";

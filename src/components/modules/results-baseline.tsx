@@ -1,4 +1,3 @@
-import React from "react";
 import iconCompleted from "../../assets/icon-completed.svg";
 import { RefreshCcwIcon } from "lucide-react";
 import { Button } from "../ui/button";
