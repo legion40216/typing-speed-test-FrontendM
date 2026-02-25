@@ -63,6 +63,12 @@ export default function App() {
 
   const startTimeRef = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // ── Tracks latest typedText synchronously to avoid stale closures ─────────
+  const typedTextRef = useRef("");
+  // ── Prevents double-fire when physical keyboard triggers both window keydown + onInput ──
+  const lastKeyWasPhysical = useRef(false);
 
   const [isNovelMode, setIsNovelMode] = useState(false);
   const [selectedNovel, setSelectedNovel] = useState<NovelEntry>(
@@ -75,6 +81,8 @@ export default function App() {
       timerRef.current && clearInterval(timerRef.current);
       timerRef.current = null;
       startTimeRef.current = null;
+      typedTextRef.current = "";
+      lastKeyWasPhysical.current = false;
       setTypedText("");
       setGameState("idle");
       setWpm(0);
@@ -84,21 +92,19 @@ export default function App() {
       setCorrectChars(0);
       setIncorrectChars(0);
       setTimeTaken(0);
-      // only pick a new random passage if NOT in novel mode
       setPassage((currentPassage) =>
         isNovelMode ? currentPassage : getRandomPassage(newDifficulty),
       );
+      setTimeout(() => inputRef.current?.focus(), 0);
     },
     [difficulty, isNovelMode],
   );
 
-  // ── Handle difficulty change ──────────────────────────────────────────────
   const handleDifficultyChange = (d: DifficultyOption) => {
     setDifficulty(d);
     reset(d);
   };
 
-  // ── Handle mode change ────────────────────────────────────────────────────
   const handleModeChange = (m: Mode) => {
     setMode(m);
     reset();
@@ -137,55 +143,93 @@ export default function App() {
     [],
   );
 
-  // ── Keydown handler ───────────────────────────────────────────────────────
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (gameState === "finished") return;
-
-      if (gameState === "idle" && e.key.length === 1) {
+  // ── Core typing logic ─────────────────────────────────────────────────────
+  const processTyping = useCallback(
+    (next: string) => {
+      if (gameState === "idle") {
         setGameState("typing");
         startTimeRef.current = Date.now();
-
         if (mode === "timed") {
           timerRef.current = setInterval(() => {
-            setTime((prev) => {
-              if (prev <= 1) return 0;
-              return prev - 1;
-            });
+            setTime((prev) => (prev <= 1 ? 0 : prev - 1));
           }, 1000);
         }
       }
 
-      setTypedText((prev) => {
-        let next: string;
-        if (e.key === "Backspace") {
-          next = prev.slice(0, -1);
-        } else if (e.key.length === 1) {
-          next = prev + e.key;
-        } else {
-          return prev;
-        }
+      const elapsed = startTimeRef.current
+        ? (Date.now() - startTimeRef.current) / 1000
+        : 0;
+      const newWpm = calcWpm(next, passage, elapsed);
+      const newAccuracy = calcAccuracy(next, passage);
+      setWpm(newWpm);
+      setAccuracy(newAccuracy);
+      typedTextRef.current = next;
+      setTypedText(next);
 
-        const elapsed = startTimeRef.current
-          ? (Date.now() - startTimeRef.current) / 1000
-          : 0;
-        const newWpm = calcWpm(next, passage, elapsed);
-        const newAccuracy = calcAccuracy(next, passage);
-        setWpm(newWpm);
-        setAccuracy(newAccuracy);
-
-        if (next === passage) {
-          // ← remove the mode check
-          const correct = next
-            .split("")
-            .filter((c, i) => c === passage[i]).length;
-          finish(newWpm, correct, next.length - correct);
-        }
-
-        return next;
-      });
+      if (next === passage) {
+        const correct = next.split("").filter((c, i) => c === passage[i]).length;
+        finish(newWpm, correct, next.length - correct);
+      }
     },
     [gameState, mode, passage, finish],
+  );
+
+  // ── Desktop: physical keyboard via window listener ────────────────────────
+  const handleWindowKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (gameState === "finished") return;
+      let next: string;
+      if (e.key === "Backspace") {
+        next = typedTextRef.current.slice(0, -1);
+      } else if (e.key.length === 1) {
+        next = typedTextRef.current + e.key;
+      } else {
+        return;
+      }
+      lastKeyWasPhysical.current = true;
+      processTyping(next);
+    },
+    [gameState, processTyping],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleWindowKeyDown);
+    return () => window.removeEventListener("keydown", handleWindowKeyDown);
+  }, [handleWindowKeyDown]);
+
+  // ── Mobile: backspace on hidden input ────────────────────────────────────
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (gameState === "finished") return;
+      if (e.key === "Backspace") {
+        e.preventDefault();
+        // If physical keyboard flagged this, it's already handled
+        if (lastKeyWasPhysical.current) {
+          lastKeyWasPhysical.current = false;
+          return;
+        }
+        processTyping(typedTextRef.current.slice(0, -1));
+      }
+    },
+    [gameState, processTyping],
+  );
+
+  // ── Mobile: character input via IME / virtual keyboard ───────────────────
+  const handleInput = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      if (gameState === "finished") return;
+      // Physical keyboard already handled this keystroke via window listener
+      if (lastKeyWasPhysical.current) {
+        lastKeyWasPhysical.current = false;
+        e.currentTarget.value = "";
+        return;
+      }
+      const value = e.currentTarget.value;
+      if (!value) return;
+      e.currentTarget.value = "";
+      processTyping(typedTextRef.current + value);
+    },
+    [gameState, processTyping],
   );
 
   // ── Watch timer hit zero (timed mode) ─────────────────────────────────────
@@ -202,11 +246,10 @@ export default function App() {
     }
   }, [time, mode, gameState, typedText, passage, finish]);
 
-  // ── Attach / detach keydown listener ─────────────────────────────────────
+  // ── Focus the hidden input on mount ──────────────────────────────────────
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+    inputRef.current?.focus();
+  }, []);
 
   // ── Cleanup timer on unmount ───────────────────────────────────────────────
   useEffect(() => {
@@ -218,6 +261,7 @@ export default function App() {
   const startGame = useCallback(() => {
     setGameState("typing");
     startTimeRef.current = Date.now();
+    inputRef.current?.focus();
 
     if (mode === "timed") {
       timerRef.current = setInterval(() => {
@@ -236,16 +280,13 @@ export default function App() {
 
   const novels = novelsData.novels as NovelEntry[];
 
-  // toggle handler
   const handleToggleNovelMode = useCallback(() => {
     setIsNovelMode((prev) => {
       const next = !prev;
       if (next) {
-        // switching INTO novel mode — use first novel
         setPassage(novels[0].text.trim());
         setSelectedNovel(novels[0]);
       } else {
-        // switching OUT — go back to difficulty-based
         setPassage(getRandomPassage(difficulty));
       }
       reset();
@@ -253,7 +294,6 @@ export default function App() {
     });
   }, [difficulty, reset]);
 
-  // novel selection handler
   const handleNovelChange = useCallback(
     (novel: NovelEntry) => {
       setSelectedNovel(novel);
@@ -265,6 +305,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-neutral-900">
+      <input
+        ref={inputRef}
+        onKeyDown={handleKeyDown}
+        onInput={handleInput}
+        className="absolute opacity-0 w-0 h-0 pointer-events-none"
+        aria-hidden="true"
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
+        readOnly={gameState === "finished"}
+      />
+
       <div className="container mx-auto px-6">
         <header className="py-6">
           <Navbar
@@ -276,7 +329,6 @@ export default function App() {
         </header>
 
         <main>
-          {/* ── Typing area: shown while idle or actively typing ── */}
           {gameState !== "finished" && (
             <TypingSection
               wpm={wpm}
@@ -295,10 +347,10 @@ export default function App() {
               novels={novels}
               selectedNovel={selectedNovel}
               onNovelChange={handleNovelChange}
+              inputRef={inputRef as React.RefObject<HTMLInputElement>}
             />
           )}
 
-          {/* ── Result screens ── */}
           {gameState === "finished" && resultState === "baseline" && (
             <ResultsBaseline
               wpm={wpm}

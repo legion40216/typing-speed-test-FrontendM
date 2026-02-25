@@ -6,6 +6,7 @@ import type {
   Novel,
   NovelEntry,
 } from "@/data/constants";
+import type { RefObject } from "react";
 
 import { Separator } from "@/components/ui/separator";
 import StatsBar from "./typing-section/statsbar";
@@ -28,6 +29,7 @@ interface TypingSectionProps {
   novels: Novel;
   selectedNovel: NovelEntry;
   onNovelChange: (novel: NovelEntry) => void;
+  inputRef: RefObject<HTMLInputElement>;
 }
 
 export default function TypingSection({
@@ -47,6 +49,7 @@ export default function TypingSection({
   novels,
   selectedNovel,
   onNovelChange,
+  inputRef,
 }: TypingSectionProps) {
   return (
     <div className="">
@@ -72,6 +75,7 @@ export default function TypingSection({
         gameState={gameState}
         onStart={onStart}
         onReset={onReset}
+        inputRef={inputRef}
       />
     </div>
   );
